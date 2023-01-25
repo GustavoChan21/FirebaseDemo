@@ -5,55 +5,83 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.navigation.fragment.findNavController
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class InsertFragment : Fragment(R.layout.fragment_insert) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [InsertFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class InsertFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var etUserName: EditText
+    private lateinit var etUserLastName: EditText
+    private lateinit var etUserAge: EditText
+    private lateinit var etUserStatus: EditText
+    private lateinit var btnSaveData: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private lateinit var dbRef: DatabaseReference
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        //code of save data with the Button "Guardar Datos"
+
+        var btnReturnMenu = requireView().findViewById<Button>(R.id.button_returnMenu)
+
+        btnReturnMenu.setOnClickListener{
+            findNavController().navigate(R.id.action_insertFragment_to_optionsFragment)
+        }
+
+        etUserName = requireView().findViewById(R.id.editTextName)
+        etUserLastName = requireView().findViewById(R.id.editTextLastName)
+        etUserAge = requireView().findViewById(R.id.editTextAge)
+        etUserStatus = requireView().findViewById(R.id.editTextStatus)
+
+        btnSaveData = requireView().findViewById(R.id.button_saveData)
+
+        dbRef = FirebaseDatabase.getInstance().getReference("Users")
+
+        btnSaveData.setOnClickListener{
+            saveUserData()
         }
     }
+    private fun saveUserData() {
+        //getting values of the form and save on the intern's variables
+        val userName = etUserName.text.toString()
+        val userLastName = etUserLastName.text.toString()
+        val userAge = etUserAge.text.toString()
+        val userStatus = etUserStatus.text.toString()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_insert, container, false)
-    }
+        if (userName.isEmpty()){
+            etUserName.error = "Por favor agregue un nombre"
+        }
+        if (userLastName.isEmpty()){
+            etUserLastName.error = "Por favor agregue un apellido"
+        }
+        if (userAge.isEmpty()){
+            etUserAge.error = "Por favor agregue la edad"
+        }
+        if (userStatus.isEmpty()){
+            etUserStatus.error = "Por favor agregue su estado civil"
+        }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment InsertFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            InsertFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        val userID = dbRef.push().key!!
+
+        val user = UserModel(userID, userName, userLastName, userAge, userStatus)
+
+        dbRef.child(userID).setValue(user)
+            .addOnCompleteListener{
+
+                etUserName.text.clear()
+                etUserLastName.text.clear()
+                etUserAge.text.clear()
+                etUserStatus.text.clear()
+            }.addOnFailureListener{
+
             }
+
     }
+
+
 }

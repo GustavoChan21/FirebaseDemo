@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:id="@+id/nav_graph">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/optionsFragment">
 
+    <fragment
+        android:id="@+id/optionsFragment"
+        android:name="com.gcdev.firebasedemo.OptionsFragment"
+        android:label="fragment_options"
+        tools:layout="@layout/fragment_options" >
+        <action
+            android:id="@+id/action_optionsFragment_to_insertFragment"
+            app:destination="@id/insertFragment" />
+        <action
+            android:id="@+id/action_optionsFragment_to_fetchFragment"
+            app:destination="@id/fetchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/insertFragment"
+        android:name="com.gcdev.firebasedemo.InsertFragment"
+        android:label="fragment_insert"
+        tools:layout="@layout/fragment_insert" >
+        <action
+            android:id="@+id/action_insertFragment_to_optionsFragment"
+            app:destination="@id/optionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fetchFragment"
+        android:name="com.gcdev.firebasedemo.FetchFragment"
+        android:label="fragment_fetch"
+        tools:layout="@layout/fragment_fetch" >
+        <action
+            android:id="@+id/action_fetchFragment_to_optionsFragment"
+            app:destination="@id/optionsFragment" />
+    </fragment>
 </navigation>
